@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
-// import {database} from './firebase';
+import React, { useState ,useEffect} from 'react';
+import {db} from './firebase';
+import { onValue, ref } from "firebase/database";
 
 const apiKey = process.env.REACT_APP_GEMINI_API_KEY;
 
 const DiseaseAnalysis = () => {
+
+  
+
+
   return (
     <div>
       <Predict />
@@ -12,6 +17,24 @@ const DiseaseAnalysis = () => {
 };
 
 const Predict = () => {
+
+  const [sensorData, setSensorData] = useState({
+    Temperature: '-- °C',
+    Humidity: '-- %',
+    Moisture: '-- %',
+    Rain: '-- mm',
+  });
+
+  // Fetch sensor data on component mount
+  useEffect(() => {
+    const sensorRef = ref(db, 'sensor');
+    const unsubscribe = onValue(sensorRef, (snapshot) => {
+      const data = snapshot.val() || {};
+      setSensorData(data);
+    });
+
+    return () => unsubscribe(); // Cleanup function to detach listener
+  }, []);
   const [activeTab, setActiveTab] = useState(0);
   
   const { GoogleGenerativeAI } = require("@google/generative-ai");
@@ -74,19 +97,19 @@ const Predict = () => {
           <h2 className="text-2xl font-bold mb-4 text-center text-green-800">Sensor Data</h2>
           <div className="bg-green-100 p-3 rounded-md w-full mb-2 text-center shadow-md">
             <h4 className="font-semibold text-green-700">Temperature</h4>
-            <p className="text-gray-700">-- °C</p>
+            <p className="text-gray-700">{sensorData.Temperature}°C</p>
           </div>
           <div className="bg-green-100 p-3 rounded-md w-full mb-2 text-center shadow-md">
             <h4 className="font-semibold text-green-700">Humidity</h4>
-            <p className="text-gray-700">-- %</p>
+            <p className="text-gray-700">{sensorData.Humidity}%</p>
           </div>
           <div className="bg-green-100 p-3 rounded-md w-full mb-2 text-center shadow-md">
             <h4 className="font-semibold text-green-700">Moisture</h4>
-            <p className="text-gray-700">-- %</p>
+            <p className="text-gray-700">{sensorData.Moisture}%</p>
           </div>
           <div className="bg-green-100 p-3 rounded-md w-full mb-2 text-center shadow-md">
             <h4 className="font-semibold text-green-700">Rain</h4>
-            <p className="text-gray-700">-- mm</p>
+            <p className="text-gray-700">{sensorData.Rain}</p>
           </div>
         </div>
 
