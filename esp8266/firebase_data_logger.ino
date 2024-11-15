@@ -1,3 +1,6 @@
+#include <iostream>
+#include "creds.cpp"
+using namespace std;
 #include <ESP8266WiFi.h>
 #include <WiFiClientSecure.h>
 #include <DHT.h>
@@ -71,7 +74,7 @@ void loop() {
   float k = analogRead(soil_moisture);
   float h = dht.readHumidity();
   float t = dht.readTemperature();
-  float p = k;
+  float p = (1024-k)/1024*100;
   int raindropState = digitalRead(raindropSensor);
 
   Serial.println("Temperature: " + String(t) + " °C");

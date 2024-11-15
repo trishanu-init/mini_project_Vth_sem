@@ -1,7 +1,7 @@
 import React, { useState ,useEffect} from 'react';
 import {db} from './firebase';
 import { onValue, ref } from "firebase/database";
-
+import ReactMarkdown from 'react-markdown';
 const apiKey = process.env.REACT_APP_GEMINI_API_KEY;
 
 const DiseaseAnalysis = () => {
@@ -80,7 +80,7 @@ const Predict = () => {
       const result = await response.json();
       setDiseaseResult(result.result);
 
-      const prompt = `Given the detected plant disease,${diseaseResult}, and current environmental conditions—temperature at ${sensorData.Temperature} °C, humidity at ${sensorData.Humidity}% —suggest an effective treatment plan. Include specific treatment options, such as organic or chemical solutions, along with application frequency and precautions. Recommend adjustments to the environment, if feasible, to help control the disease and aid recovery. Finally, offer preventive care tips to avoid recurrence under similar conditions in ${selectedLanguage}`;
+      const prompt = `Given the detected plant disease,${diseaseResult}, and current environmental conditions—temperature at ${sensorData.Temperature} °C, humidity at ${sensorData.Humidity}% —suggest an effective treatment plan. Include specific treatment options, such as organic or chemical solutions, along with application frequency and precautions. Recommend adjustments to the environment, if feasible, to help control the disease and aid recovery. Finally, offer preventive care tips to avoid recurrence under similar conditions in ${selectedLanguage}.`;
       const output = await model.generateContent(prompt);
       const respo = await output.response;
       const content = await respo.text();
@@ -93,6 +93,14 @@ const Predict = () => {
       setLoading(false);
     }
   };
+
+  const [showFullContent, setShowFullContent] = useState(false);
+  const visibleContent = gptResponse
+    ? gptResponse.slice(0, Math.ceil(gptResponse.length * 0.07)) + "..........."
+    : "";
+
+  const handleReadMoreClick = () => setShowFullContent(true);
+  const handleCloseDialog = () => setShowFullContent(false);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#679267] p-4">
@@ -192,10 +200,54 @@ const Predict = () => {
               <h3 className="text-xl font-semibold text-green-800">Detected Disease:</h3>
               <p className="text-green-700 mb-4">{diseaseResult}</p>
               {gptResponse && (
-                <div>
-                  <h4 className="text-lg font-semibold text-green-800">Information:</h4>
-                  <p className="text-green-700 mb-4">{gptResponse}</p>
-                </div>
+                <div id="Response" className="mt-4 p-4 bg-green-100 rounded-lg shadow-md">
+                <h4 className="text-lg font-semibold text-green-800">Information:</h4>
+                <p className="text-green-700 mb-4 text-left">
+                  <ReactMarkdown>
+                  {gptResponse ? (showFullContent ? gptResponse : visibleContent) : "No information available."}
+                  </ReactMarkdown>
+                </p>
+                {!showFullContent && gptResponse && (
+                  <button
+                    onClick={handleReadMoreClick}
+                    className="mt-2 px-4 py-2 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition-colors"
+                  >
+                    Read More
+                  </button>
+                )}
+            
+                {/* Dialog Box */}
+{showFullContent && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white w-[90%] sm:w-[600px] h-[80%] p-6 rounded-lg shadow-lg flex flex-col">
+      {/* Header Section */}
+      <div className="flex justify-between items-center mb-4">
+        <h4 className="text-lg font-semibold text-green-800">Detailed Information:</h4>
+        <button
+          onClick={handleCloseDialog}
+          className="text-green-600 hover:text-green-800 font-bold text-lg"
+        >
+          ✖
+        </button>
+      </div>
+
+      {/* Scrollable Content Section */}
+      <div className="flex-grow overflow-y-auto mb-4 pr-2 text-left">
+        <p className="text-gray-700"><ReactMarkdown>{gptResponse}</ReactMarkdown></p>
+      </div>
+
+      {/* Footer Section */}
+      <button
+        onClick={handleCloseDialog}
+        className="py-2 px-4 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition-colors"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
+
+              </div>
               )}
             </div>
           )}
