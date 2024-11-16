@@ -2,13 +2,11 @@ import React, { useState ,useEffect} from 'react';
 import {db} from './firebase';
 import { onValue, ref } from "firebase/database";
 import ReactMarkdown from 'react-markdown';
+import {jsPDF} from 'jspdf';
+import {QRCodeSVG} from 'qrcode.react';
 const apiKey = process.env.REACT_APP_GEMINI_API_KEY;
 
 const DiseaseAnalysis = () => {
-
-  
-
-
   return (
     <div>
       <Predict />
@@ -24,6 +22,31 @@ const Predict = () => {
     Moisture: '-- %',
     Rain: '-- mm',
   });
+
+  const [showQR, setShowQR] = useState(false);
+  const handleGenerateQR = () => setShowQR(true);
+  const handleCloseQR = () => setShowQR(false);
+
+  const handleDownloadReport = () => {
+    const doc = new jsPDF();
+
+    // Add content to the PDF
+    const currentDate = new Date().toLocaleString();
+    doc.setFontSize(16);
+    doc.text("Disease Diagnosis Report", 10, 10);
+    doc.setFontSize(12);
+    doc.text(`Date: ${currentDate}`, 10, 20);
+    doc.text(`Detected Disease: ${diseaseResult || "Not Available"}`, 10, 30);
+    doc.text("Analysis:", 10, 40);
+    doc.setFontSize(10);
+
+    const response = gptResponse || "No response available.";
+    const splitText = doc.splitTextToSize(response, 180);
+    doc.text(splitText, 10, 50);
+
+    // Save the PDF
+    doc.save(`Disease_Report_${currentDate}.pdf`);
+  };
 
   // Fetch sensor data on component mount
   useEffect(() => {
@@ -101,6 +124,8 @@ const Predict = () => {
 
   const handleReadMoreClick = () => setShowFullContent(true);
   const handleCloseDialog = () => setShowFullContent(false);
+
+  
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#679267] p-4">
@@ -237,16 +262,41 @@ const Predict = () => {
       </div>
 
       {/* Footer Section */}
-      <button
-        onClick={handleCloseDialog}
-        className="py-2 px-4 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition-colors"
-      >
-        Close
-      </button>
+      
+      <div className="flex justify-between">
+              <button
+                onClick={handleDownloadReport}
+                className="py-2 px-4 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition-colors"
+              >
+                Download Report
+              </button>
+              <button
+                onClick={handleGenerateQR}
+                className="py-2 px-4 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition-colors"
+              >
+                Generate QR
+              </button>
+            </div>
     </div>
   </div>
 )}
-
+{/* QR Code Popup */}
+{showQR && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
+            <h4 className="text-lg font-semibold text-green-800 mb-4">
+              QR Code for Report
+            </h4>
+            <QRCodeSVG value="Generated_Report.pdf" size={256} />
+            <button
+              onClick={handleCloseQR}
+              className="mt-4 py-2 px-4 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
               </div>
               )}
             </div>
