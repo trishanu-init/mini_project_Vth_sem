@@ -14,10 +14,10 @@ DHT dht(DPIN, DTYPE);
 #define ON_Board_LED 2  // On board LED, indicator when connecting to WiFi
 #define soil_moisture A0 // Soil Moisture Sensor Pin
 
-#define API_KEY "AIzaSyAyZLWgQSWzcjfMEmTnsaC69Li0J7PX-gM"
-#define DATABASE_URL "https://mini-project-vth-sem-default-rtdb.asia-southeast1.firebasedatabase.app/"
-#define USER_EMAIL "trishanu.nayak@gmail.com"
-#define USER_PASSWORD "trishanu1234ESP"
+#define API_KEY "API-KEY"
+#define DATABASE_URL "DATABASE-URL"
+#define USER_EMAIL "E-MAIL"
+#define USER_PASSWORD "PASSWORD"
 
 FirebaseData fbdo;
 FirebaseAuth auth;
@@ -25,13 +25,12 @@ FirebaseConfig config;
 
 const int raindropSensor = D3;
 
-#define WIFI_SSID "Galaxy F1235C5"   // WiFi SSID
-#define WIFI_PASSWORD "rnjc6038" // WiFi Password
+#define WIFI_SSID "ssid"   // WiFi SSID
+#define WIFI_PASSWORD "pswd" // WiFi Password
 
 const char* host = "script.google.com";
 const int httpsPort = 443;
 
-// String GAS_ID = "AKfycbwDHi9DAd7i8QbcGd8k4q6sfXZfemNxQYBfGlK0zJgth2Isi1vZAN4zdsmjVXh86M2LoQ";
 
 void setup() {
   Serial.begin(115200);
