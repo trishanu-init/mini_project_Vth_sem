@@ -64,11 +64,11 @@ const Predict = () => {
     return () => unsubscribe(); // Cleanup function to detach listener
   }, []);
 
-  const [activeTab, setActiveTab] = useState(0);
+  // const [activeTab, setActiveTab] = useState(0);
   
   const { GoogleGenerativeAI } = require("@google/generative-ai");
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -103,7 +103,7 @@ const Predict = () => {
       const result = await response.json();
       setDiseaseResult(result.result);
 
-      const prompt = `Given the detected plant disease,${diseaseResult}, and current environmental conditions—temperature at ${sensorData.Temperature} °C, humidity at ${sensorData.Humidity}% —suggest an effective treatment plan. Include specific treatment options, such as organic or chemical solutions, along with application frequency and precautions. Recommend adjustments to the environment, if feasible, to help control the disease and aid recovery. Finally, offer preventive care tips to avoid recurrence under similar conditions in ${selectedLanguage}.`;
+      const prompt = `Given the detected plant disease,Tomato_Early_Blight, and current environmental conditions—temperature at ${sensorData.Temperature} °C, humidity at ${sensorData.Humidity}% —suggest an effective treatment plan. Include specific treatment options, such as organic or chemical solutions, along with application frequency and precautions. Recommend adjustments to the environment, if feasible, to help control the disease and aid recovery. Finally, offer preventive care tips to avoid recurrence under similar conditions in ${selectedLanguage}.`;
       const output = await model.generateContent(prompt);
       const respo = await output.response;
       const content = await respo.text();
