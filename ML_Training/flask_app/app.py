@@ -4,7 +4,7 @@ import numpy as np
 import pickle
 from werkzeug.utils import secure_filename
 from PIL import Image
-import tensorflow as tf
+# import tensorflow as tf
 
 # Initialize Flask app
 app = Flask(__name__)
