@@ -83,25 +83,38 @@ const Predict = () => {
         alert("No file selected");
         return;
       }
-  
+    
       setLoading(true);
       const formData = new FormData();
       formData.append('file', selectedFile);
-  
+    
       try {
         const response = await fetch(ML_url, {
           method: 'POST',
           body: formData,
         });
-        const result = await response.json();
-        setDiseaseResult(result.result);
-  
-        const prompt = `Given the detected plant disease,Tomato_Early_Blight, and current environmental conditions—temperature at ${sensorData.Temperature} °C, humidity at ${sensorData.Humidity}% —suggest an effective treatment plan. Include specific treatment options, such as organic or chemical solutions, along with application frequency and precautions. Recommend adjustments to the environment, if feasible, to help control the disease and aid recovery. Finally, offer preventive care tips to avoid recurrence under similar conditions in ${selectedLanguage}.`;
-        const output = await model.generateContent(prompt);
-        const respo = await output.response;
-        const content = await respo.text();
-        setGptResponse(content);
-  
+    
+        // Check if the response is successful (status 200)
+        if (response.ok) {
+          const result = await response.json();
+          
+          // Check if the API response contains the 'prediction' field
+          if (result.prediction) {
+            setDiseaseResult(result.prediction);
+            
+            const prompt = `Given the detected plant disease, ${result.prediction}, and current environmental conditions—temperature at ${sensorData.Temperature} °C, humidity at ${sensorData.Humidity}% —suggest an effective treatment plan. Include specific treatment options, such as organic or chemical solutions, along with application frequency and precautions. Recommend adjustments to the environment, if feasible, to help control the disease and aid recovery. Finally, offer preventive care tips to avoid recurrence under similar conditions in ${selectedLanguage}.`;
+            
+            // Generate content with the model based on the response prediction
+            const output = await model.generateContent(prompt);
+            const respo = await output.response;
+            const content = await respo.text();
+            setGptResponse(content);
+          } else {
+            alert('Prediction not found in the response');
+          }
+        } else {
+          alert('Failed to get prediction from the server');
+        }
       } catch (error) {
         console.error('Error uploading file:', error);
         alert('Failed to upload file');
@@ -109,6 +122,7 @@ const Predict = () => {
         setLoading(false);
       }
     };
+    
   
     const [showFullContent, setShowFullContent] = useState(false);
     const visibleContent = gptResponse

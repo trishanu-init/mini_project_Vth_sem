@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import os
 import numpy as np
 import pickle
@@ -8,6 +9,8 @@ from PIL import Image
 
 # Initialize Flask app
 app = Flask(__name__)
+
+CORS(app)
 
 # Load pre-trained model and label binarizer using pickle
 with open('plant_disease_classification_model001.pkl', 'rb') as model_file:
