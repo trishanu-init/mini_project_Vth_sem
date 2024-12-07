@@ -1,5 +1,4 @@
 Flask==2.2.3
-pickle==4.0.0
 numpy==1.23.5
 pillow==9.5.0
 werkzeug==2.2.3
