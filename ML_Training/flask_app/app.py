@@ -7,26 +7,26 @@ from werkzeug.utils import secure_filename
 from PIL import Image
 # import tensorflow as tf
 
-# Initialize Flask app
+
 app = Flask(__name__)
 
 CORS(app)
 
-# Load pre-trained model and label binarizer using pickle
+# Load classification model and label transform model
 with open('plant_disease_classification_model001.pkl', 'rb') as model_file:
     model = pickle.load(model_file)
 
 with open('plant_disease_label_transform.pkl', 'rb') as label_file:
     label_binarizer = pickle.load(label_file)
 
-# Set the upload folder
+
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Allowed file extensions
+
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
-# Function to check allowed file types
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -54,7 +54,7 @@ def upload_image():
         return jsonify({"error": "No file part"}), 400
     file = request.files['file']
 
-    # If no file is selected or file type is not allowed
+    
     if file.filename == '' or not allowed_file(file.filename):
         return jsonify({"error": "No selected file or invalid file type"}), 400
     
@@ -62,7 +62,7 @@ def upload_image():
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(file_path)
     
-    # Call the prediction function
+
     try:
         predicted_label = predict_disease(file_path)
         return jsonify({"prediction": predicted_label}), 200
