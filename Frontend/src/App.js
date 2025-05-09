@@ -1,5 +1,4 @@
 // src/App.js
-require('dotenv').config();
 import React from 'react';
 import DiseaseAnalysis from './DiseaseAnalysis';
 
