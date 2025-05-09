@@ -5,8 +5,8 @@ import numpy as np
 import pickle
 from werkzeug.utils import secure_filename
 from PIL import Image
-# import tensorflow as tf
 
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 app = Flask(__name__)
 

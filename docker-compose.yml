@@ -1,0 +1,23 @@
+version: '3'
+services:
+  nodeapp:
+    env_file:
+      - /Frontend/.env
+    build:
+      context: .
+      dockerfile: Dockerfile.node
+    ports:
+      - "3000:3000"
+    
+    depends_on:
+      - pythonflaskapp
+
+  pythonflaskapp:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    ports:
+      - "5000:5000"
+
+    restart: always
+
